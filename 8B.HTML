@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8B Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        /* Global Styles */
+        body {
+            background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(0, 15, 30, 1) 100%);
+            color: #00faff;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            position: relative;
+        }
+
+        /* Background animation */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #001f3d, #00c8ff);
+            background-size: 200% 200%;
+            animation: gradientMove 10s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* Futuristic Disclaimer Screen */
+        .warning-screen {
+            text-align: center;
+            color: #00fffa;
+            font-size: 35px;
+            font-weight: bold;
+            animation: slideIn 1.5s ease-out;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+            width: 70%;
+            max-width: 600px;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid rgba(0, 255, 255, 0.9);
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .warning-screen button {
+            background: linear-gradient(45deg, #00c8ff, #0077ff);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 24px;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 0 15px #00fffa;
+            margin-top: 30px;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .warning-screen button:hover {
+            background: #0077ff;
+            transform: scale(1.1);
+        }
+
+        /* Futuristic Quiz Container */
+        .quiz-container {
+            width: 80%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+            text-align: center;
+            display: none;
+            border: 2px solid rgba(0, 255, 255, 0.8);
+        }
+
+        .question {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #00fffa;
+            animation: glow 3s infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px #00fffa, 0 0 20px #00fffa; }
+            100% { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+        }
+
+        .options button {
+            width: 100%;
+            padding: 16px;
+            margin: 8px 0;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #00c8ff, #0077ff);
+            color: white;
+            border-radius: 15px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .options button:hover {
+            background-color: #0077ff;
+            transform: scale(1.05);
+        }
+
+        .correct {
+            background: #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+            animation: neonGlow 1s ease-in-out infinite alternate;
+        }
+
+        .wrong {
+            background: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            animation: neonGlow 1s ease-in-out infinite alternate;
+        }
+
+        /* Neon glow for wrong/correct answers */
+        @keyframes neonGlow {
+            0% { text-shadow: 0 0 20px #ffcc00, 0 0 40px #ffcc00; }
+            100% { text-shadow: 0 0 40px #ffcc00, 0 0 60px #ffcc00; }
+        }
+
+        /* Ending Screen */
+        #end-screen {
+            font-size: 48px;
+            color: #ffcc00;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            font-weight: bold;
+            animation: neonGlow 1.5s infinite alternate;
+        }
+
+        /* Made By Text */
+        #made-by {
+            font-size: 20px;
+            color: #ff00ff;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            font-weight: bold;
+            animation: fadeIn 3s ease-in-out 1s;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Audio -->
+    <audio id="background-music" autoplay loop>
+        <source src="https://www.soundjay.com/free-music/sounds/ambient-1.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="background"></div>
+
+    <!-- Futuristic Disclaimer Screen -->
+    <div class="warning-screen" id="warning-screen">
+        <p>Your journey into the unknown begins. Ready for the 8B experience?</p>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Container -->
+    <div class="quiz-container" id="quiz-container">
+        <div id="question-container">
+            <p class="question" id="question-text">Loading question...</p>
+            <div class="options">
+                <button onclick="selectAnswer(0)"></button>
+                <button onclick="selectAnswer(1)"></button>
+                <button onclick="selectAnswer(2)"></button>
+                <button onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+        <div id="end-screen">🎉 Congratulations, you've completed the quiz! 🎉</div>
+        <div id="made-by">Made by Dhruvjyoti</div>
+    </div>
+
+    <script>
+        // Questions placeholder (replace these with your own)
+        const questions = [
+        { question: "Who is the most hardworking student in 8B?", answers: ["Aarush Sarkar", "Priyanshu Ghosh", "Meghna Chakraborty", "All of the students"], correct: 3 },
+            { question: "Who has the best handwriting in 8B?", answers: ["Sragvi Bera", "Nilanjana Das", "Srija Bhattacharjee", "Brishti Mitra"], correct: 0 },
+            { question: "Who is the most punctual student in 8B?", answers: ["Ayush Ray", "Ayan Pal", "Dhruvjyoti Das", "Rajbeer Chowdhury"], correct: 2 },
+            { question: "Who is the best speaker in 8B?", answers: ["Aritri Chakraborty", "Shamik Lahiri", "Adrita Das", "Snigdha Das"], correct: 1 },
+            { question: "Who is the funniest person in 8B?", answers: ["Aritri Chakraborty", "Binith Saha", "Rajbeer Chowdhury", "Soumyaditya Roy"], correct: 1 },
+            { question: "Who is the most disciplined student in 8B?", answers: ["None", "Aradhya Deb", "Ayush Ray", "Rishikesh Das"], correct: 0 },
+            { question: "Who is the best artist in 8B?", answers: ["Swastik Karmakar", "Debadrita Bakshi", "Sailosri Paul", "Brishti Mitra"], correct: 0 },
+            { question: "Who is the most helpful student in 8B?", answers: ["All", "Nilanjana Das", "Meghna Chakraborty", "Priyanshu Ghosh"], correct: 0 },
+            { question: "Who is the best writer in 8B?", answers: ["Dona Ray", "Srija Bhattacharjee", "Adrita Das", "Tanish Dutta"], correct: 0 },
+            { question: "Who is the most tech-savvy student in 8B?", answers: ["Arush Karmakar", "Shamik Lahiri", "Hrishita Saha", "Binith Saha"], correct: 0 },
+            { question: "Who is the best chess player in 8B?", answers: ["Aarush Sarkar", "Ayan Pal", "Ayushman Nandi", "Rishikesh Das"], correct: 0 },
+            { question: "Who is the most knowledgeable student in 8B?", answers: ["All", "Souvik Roy", "Sragi Bera", "Aarush Sarkar"], correct: 0 },
+            { question: "Who is the best dancer in 8B?", answers: ["Dipanwita Sen", "Ayush Ray", "Krishanu", "Samya Brata Chattopadhyay"], correct: 2 },
+            { question: "Who is the kindest student in 8B?", answers: ["Debadrita Bakshi", "Srija Bhattacharjee", "Hrishita Saha", "Aritri Chakraborty"], correct: 0 },
+            { question: "Who is the best at P.N.P.C (Para Ninda Para Charcha)?", answers: ["Anushka Bhowmik", "Aradhya Deb", "Dipanwita Sen", "Rajbeer Chowdhury"], correct: 0 },
+            { question: "Who has the best sense of humor in 8B?", answers: ["Tushar Ghosh", "Shamik Lahiri", "Rishikesh Das", "Dipanwita Sen"], correct: 0 },
+            { question: "Who is the best singer in 8B?", answers: ["Souvik Roy", "Sanbhita Ray", "Ayushman Nandi", "Adrita Das"], correct: 0 },
+            { question: "Who is the best tabla artist in 8B?", answers: ["Sagnik Roy", "Hrishita Saha", "Aradhya Deb", "Priyanshu Ghosh"], correct: 0 },
+            { question: "Who is the most innovative thinker in 8B?", answers: ["Souvik Roy", "Debadrita Bakshi", "Binith Saha", "Aarush Sarkar"], correct: 0 },
+            { question: "Did you enjoy teaching our class this year?", answers: ["Yes", "No", "Not Sure", "Occasionally"], correct: 0 },
+            { question: "Do you think we’ve all grown as individuals?", answers: ["Yes", "No", "Partially", "I'm not sure"], correct: 0 },
+            { question: "Were there moments when our class made you proud?", answers: ["Yes", "No", "Sometimes", "Not really"], correct: 0 },
+            { question: "Did you find teaching us rewarding?", answers: ["Yes", "No", "Sometimes", "It had its moments"], correct: 0 },
+            { question: "Do you believe we are prepared for the next grade?", answers: ["Yes", "No", "Somewhat", "Undecided"], correct: 0 },
+            { question: "Was there a time this year when we surprised you positively?", answers: ["Yes", "No", "Occasionally", "Not really"], correct: 0 },
+            { question: "Did you feel like we bonded as a class?", answers: ["Yes", "No", "Somewhat", "Not at all"], correct: 0 },
+            { question: "Do you think we were a unique class?", answers: ["Yes", "No", "In some ways", "Not particularly"], correct: 0 },
+            { question: "Have you seen improvements in our behavior throughout the year?", answers: ["Yes", "No", "Sometimes", "Not much"], correct: 0 },
+            { question: "Did you have fun teaching us?", answers: ["Yes", "No", "Sometimes", "It was okay"], correct: 0 },
+            { question: "Were there any moments when you felt challenged by our class?", answers: ["Yes", "No", "Sometimes", "Quite a lot"], correct: 0 },
+            { question: "Did you learn something new from teaching us?", answers: ["Yes", "No", "A little", "Not much"], correct: 0 },
+            { question: "Do you think we will do well in the future?", answers: ["Yes", "No", "I'm not sure", "With some guidance"], correct: 0 },
+            { question: "Do you think we’ll miss your lessons?", answers: ["Yes", "No", "Maybe", "Not sure"], correct: 0 },
+            { question: "Did our class have a good impact on you?", answers: ["Yes", "No", "Somewhat", "Not really"], correct: 0 },
+            { question: "Were you able to see our potential as a group?", answers: ["Yes", "No", "Somewhat", "Not really"], correct: 0 },
+            { question: "Would you want to teach this class again?", answers: ["Yes", "No", "Maybe", "Depends"], correct: 0 },
+            { question: "Did you find our participation engaging?", answers: ["Yes", "No", "Sometimes", "Not really"], correct: 0 },
+            { question: "Do you think we have a lot of potential?", answers: ["Yes", "No", "Somewhat", "I'm unsure"], correct: 0 },
+            { question: "Will you miss teaching us?", answers: ["Yes", "No", "Maybe", "I'm not sure"], correct: 0 }
+        ];
+
+
+        let currentQuestionIndex = 0;
+
+        // Start quiz
+        function startQuiz() {
+            document.getElementById("warning-screen").style.display = "none";
+            document.getElementById("quiz-container").style.display = "block";
+            showQuestion();
+        }
+
+        // Show question
+        function showQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question-text").textContent = currentQuestion.question;
+            const buttons = document.querySelectorAll(".options button");
+            currentQuestion.answers.forEach((answer, index) => {
+                buttons[index].textContent = answer;
+                buttons[index].classList.remove("correct", "wrong");
+            });
+        }
+
+        // Handle answer selection
+        function selectAnswer(selectedIndex) {
+            const currentQuestion = questions[currentQuestionIndex];
+            const buttons = document.querySelectorAll(".options button");
+
+            if (selectedIndex === currentQuestion.correct) {
+                buttons[selectedIndex].classList.add("correct");
+            } else {
+                buttons[selectedIndex].classList.add("wrong");
+                // Show correct answer
+                buttons[currentQuestion.correct].classList.add("correct");
+            }
+
+            // Move to next question after a short delay
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    showQuestion();
+                } else {
+                    endQuiz();
+                }
+            }, 2000);
+        }
+
+        // End the quiz
+        function endQuiz() {
+            document.getElementById("end-screen").style.opacity = 1;
+            document.getElementById("made-by").style.opacity = 1;
+        }
+    </script>
+</body>
+</html>
